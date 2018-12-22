@@ -10,11 +10,18 @@ describe ArticlesController do
     end
 
     it 'should return proper json' do
-      create_list :article, 2
+      articles = create_list :article, 2
       get :index
       json = JSON.parse(response.body)
-      pp json
-      expect(json.length).to eq(2)
+      json_data = json['data']
+      expect(json_data.length).to eq(2)
+      articles.each_with_index do |article,index|
+        expect(json_data[index]['attributes']).to eq({
+          "title" => article.title,
+          "content" => article.content,
+          "slug" => article.slug
+          })
+      end
     end
 
   end
