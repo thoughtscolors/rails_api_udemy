@@ -14,7 +14,6 @@ describe ArticlesController do
       get :index
       json = JSON.parse(response.body)
       json_data = json['data']
-      expect(json_data.length).to eq(2)
       articles.each_with_index do |article,index|
         expect(json_data[index]['attributes']).to eq({
           "title" => article.title,
