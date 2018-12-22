@@ -13,6 +13,7 @@ describe ArticlesController do
       create_list :article, 2
       get :index
       json = JSON.parse(response.body)
+      pp json
       expect(json.length).to eq(2)
     end
 
