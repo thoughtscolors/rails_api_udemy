@@ -26,6 +26,11 @@ describe UserAuthenticator do
       end
     end
 
+    before do
+      allow_any_instance_of(Octokit::Client).to receive(
+        :exchange_code_for_token).and_return("validaccesstoken")
+    end
+
     context 'when code is correct' do
       it 'should save new user when user does not exist' do
         expect{ subject }.to change{ User.count }.by(1)
