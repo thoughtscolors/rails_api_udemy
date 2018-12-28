@@ -42,6 +42,29 @@ RSpec.describe AccessTokensController, type: :controller do
 
     context 'when successful request' do
 
+      subject { post :create, params: { code: "valid_code" } }
+
+      let(:user_data) do
+        {
+          login: 'jsmith1',
+          url: 'http://example.com',
+          avatar_url: 'http://example.com/avatar',
+          name: 'John Smith'
+        }
+      end
+
+      before do
+        allow_any_instance_of(Octokit::Client).to receive(
+          :exchange_code_for_token).and_return("validaccesstoken")
+
+        allow_any_instance_of(Octokit::Client).to receive(
+          :user).and_return(user_data)
+      end
+
+      it 'should return 201 status code' do
+        subject
+        expect(response).to have_http_status(:created)
+      end
     end
   end
 end
