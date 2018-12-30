@@ -4,9 +4,19 @@ RSpec.describe CommentsController, type: :controller do
   let(:article) { create :article }
 
   describe "GET #index" do
+    subject { get :index, params: { article_id: article.id } }
+    
     it "returns a success response" do
-      get :index, params: { article_id: article.id }
+      subject
       expect(response).to have_http_status(:ok)
+    end
+
+    it 'should return only comments belonging to article' do
+      comment = create :comment, article: article
+      create :comment
+      subject
+      expect(json_data.length).to eq(1)
+      expect(json_data.first['id']).to eq(comment.id.to_s)
     end
   end
 
