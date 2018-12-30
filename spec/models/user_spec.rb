@@ -24,5 +24,5 @@ RSpec.describe User, type: :model do
       expect(other_user).to be_valid
     end
   end
-  
+
 end
