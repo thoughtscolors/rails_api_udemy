@@ -13,7 +13,7 @@ class ArticlesController < ApplicationController
   end
 
   def create
-    article = Article.new(article_params)
+    article = current_user.articles.build(article_params)
     #save method calls valid? and returns true or false
     #adding ! makes it raise an error if returning false
     article.save!
@@ -25,9 +25,11 @@ class ArticlesController < ApplicationController
   end
 
   def update
-    article = Article.find(params[:id])
+    article = current_user.articles.find(params[:id])
     article.update_attributes!(article_params)
     render json: article, status: :ok
+  rescue ActiveRecord::RecordNotFound
+    authorization_error
   rescue
     render json: article, adapter: :json_api,
       serializer: ErrorSerializer,

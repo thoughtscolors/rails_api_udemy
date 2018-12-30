@@ -116,8 +116,6 @@ describe ArticlesController do
       end
 
       context 'when valid params provided' do
-        let(:user) { create :user }
-        let(:access_token) { user.create_access_token }
         before { request.headers['authorization']= "Bearer #{access_token.token}" }
 
         let(:valid_attributes) do
@@ -154,9 +152,10 @@ describe ArticlesController do
 
   describe '#update' do
     let(:user) { create :user }
-    let(:article) { create :article }
-    subject { patch :update, params: { id: article.id } }
+    let(:article) { create :article, user: user }
     let(:access_token) { user.create_access_token }
+
+    subject { patch :update, params: { id: article.id } }
 
     context 'when no code provided' do
       it_behaves_like 'forbidden_requests'
@@ -230,7 +229,10 @@ describe ArticlesController do
             }
           }
         end
-        subject { post :create, params: valid_attributes }
+
+        subject do
+          patch :update, params: valid_attributes.merge(id: article.id)
+        end
 
         it 'should have 200 status code' do
           subject
