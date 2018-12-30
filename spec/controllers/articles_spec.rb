@@ -76,6 +76,7 @@ describe ArticlesController do
       let(:user) { create :user }
       let(:access_token) { user.create_access_token }
       before { request.headers['authorization']= "Bearer #{access_token.token}" }
+
       context 'when invalid parameters provided' do
         let(:invalid_attributes) do
           {
@@ -87,6 +88,7 @@ describe ArticlesController do
             }
           }
         end
+
         subject { post :create, params: invalid_attributes }
 
         it 'should return 422 status code' do
@@ -110,6 +112,40 @@ describe ArticlesController do
               "source"=>{"pointer"=>"/data/attributes/slug"}
             }
           )
+        end
+      end
+
+      context 'when valid params provided' do
+        let(:user) { create :user }
+        let(:access_token) { user.create_access_token }
+        before { request.headers['authorization']= "Bearer #{access_token.token}" }
+
+        let(:valid_attributes) do
+          {
+            "data" => {
+              "attributes" => {
+                "title" => 'Some title',
+                "content" => 'Some content',
+                "slug" => 'this-is-a-slug'
+              }
+            }
+          }
+        end
+        subject { post :create, params: valid_attributes }
+
+        it 'should have 201 status code' do
+          subject
+          expect(response).to have_http_status(:created)
+        end
+
+        it 'should have proper json body' do
+          subject
+          expect(json_data['attributes'])
+          .to include(valid_attributes['data']['attributes'])
+        end
+
+        it 'should create the article' do
+          expect{ subject }.to change{ Article.count }
         end
       end
     end

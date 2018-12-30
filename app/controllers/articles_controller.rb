@@ -16,7 +16,8 @@ class ArticlesController < ApplicationController
     article = Article.new(article_params)
 
     if article.valid?
-
+      article.save
+      render json: article, status: :created
     else
       render json: article, adapter: :json_api,
       serializer: ActiveModel::Serializer::ErrorSerializer,
@@ -26,6 +27,8 @@ class ArticlesController < ApplicationController
 
   private
   def article_params
+    params.require(:data).require(:attributes)
+    .permit(:title, :content, :slug) ||
     ActionController::Parameters.new
   end
 
