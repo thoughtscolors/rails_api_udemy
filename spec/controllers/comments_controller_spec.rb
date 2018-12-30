@@ -46,13 +46,6 @@ RSpec.describe CommentsController, type: :controller do
   end
 
   describe "POST #create" do
-    let(:valid_attributes) {
-      { content: 'My comment' }
-    }
-
-    let(:invalid_attributes) {
-      { content: '' }
-    }
 
     context 'when not authorized' do
       subject { post :create, params: { article_id: article.id } }
@@ -60,33 +53,62 @@ RSpec.describe CommentsController, type: :controller do
     end
 
     context 'when authorized' do
-      before { request.headers['authorization']= "Bearer #{access_token.token}" }
+      let(:valid_attributes) do
+        {
+          data: {
+            attributes: { content: 'My comment' }
+          }
+        }
+      end
+
+      let(:invalid_attributes) do
+        { data: { attributes: { content: '' } } }
+      end
+
+      before { request.headers['authorization'] = "Bearer #{access_token.token}" }
       let(:user) { create :user }
       let(:access_token) { user.create_access_token }
 
       context "with valid params" do
+        subject { post :create, params: { article_id: article.id, comment: valid_attributes } }
+
+        it 'returns 201 status code' do
+          subject
+          expect(response).to have_http_status(:created)
+        end
+
         it "creates a new Comment" do
-          expect {
-            post :create, params: { article_id: article.id, comment: valid_attributes }
-          }.to change(Comment, :count).by(1)
+          expect { subject }.to change(article.comments, :count).by(1)
         end
 
         it "renders a JSON response with the new comment" do
-
-          post :create, params: { article_id: article.id, comment: valid_attributes }
-          expect(response).to have_http_status(:created)
-          expect(response.content_type).to eq('application/json')
-          expect(response.location).to eq(article_url(article))
+          subject
+          expect(json_data['attributes']).to eq({
+            'content' => 'My comment'
+          })
         end
       end
 
       context "with invalid params" do
-        it "renders a JSON response with errors for the new comment" do
+        subject { post :create, params: {
+          article_id: article.id, comment: invalid_attributes }
+        }
 
-          post :create, params: { article_id: article.id, comment: invalid_attributes }
+        it 'should return 422 status code' do
+          subject
           expect(response).to have_http_status(:unprocessable_entity)
-          expect(response.content_type).to eq('application/json')
         end
+
+        it "renders a JSON response with errors for the new comment" do
+          subject
+          expect(json['errors']).to include(
+            {
+              "detail"=>"can't be blank",
+              "source"=>{"pointer"=>"/data/attributes/content"}
+            }
+          )
+        end
+
       end
     end
   end
