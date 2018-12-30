@@ -34,6 +34,15 @@ RSpec.describe CommentsController, type: :controller do
         'content' => comment.content
       })
     end
+
+    it "should have the related object's information in the response" do
+      user = create :user
+      create :comment, article: article, user: user
+      subject
+      relationships = json_data.first['relationships']
+      expect(relationships['article']['data']['id']).to eq(article.id.to_s)
+      expect(relationships['user']['data']['id']).to eq(user.id.to_s)
+    end
   end
 
   describe "POST #create" do
