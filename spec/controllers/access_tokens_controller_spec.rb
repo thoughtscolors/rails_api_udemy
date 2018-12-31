@@ -3,9 +3,9 @@ require 'rails_helper'
 RSpec.describe AccessTokensController, type: :controller do
   describe '#create' do
 
-    context 'when no code provided' do
+    context 'when no auth data provided' do
       subject { post :create }
-      it_behaves_like "unauthorized_requests"
+      it_behaves_like "unauthorized_standard_requests"
     end
 
     context 'when invalid code provided' do
@@ -17,7 +17,7 @@ RSpec.describe AccessTokensController, type: :controller do
           :exchange_code_for_token).and_return(github_error)
       end
       subject { post :create, params: { code: "invalid_code" } }
-      it_behaves_like "unauthorized_requests"
+      it_behaves_like "unauthorized_oauth_requests"
     end
 
     context 'when successful request' do
