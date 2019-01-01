@@ -23,7 +23,7 @@ class ApplicationController < ActionController::API
     @current_user = access_token&.user
   end
 
-  def authentication_standard_error
+  def authentication_oauth_error
     error = {
               "status" => "401",
               "source" => { "pointer" => "/code" },
@@ -33,7 +33,7 @@ class ApplicationController < ActionController::API
     render json: { "errors": [ error ] }, status: 401
   end
 
-  def authentication_oauth_error
+  def authentication_standard_error
     error = {
       "status" => "401",
       "source" => {"pointer" => "/data/attributes/password"},

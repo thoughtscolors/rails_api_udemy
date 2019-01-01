@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-shared_examples_for "unauthorized_oauth_requests" do
+shared_examples_for "unauthorized_standard_requests" do
   let(:authentication_error) do
     {
       "status" => "401",
@@ -21,7 +21,7 @@ shared_examples_for "unauthorized_oauth_requests" do
   end
 end
 
-shared_examples_for "unauthorized_standard_requests" do
+shared_examples_for "unauthorized_oauth_requests" do
   let(:authentication_error) do
     {
       "status" => "401",
