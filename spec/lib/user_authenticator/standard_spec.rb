@@ -27,6 +27,7 @@ describe UserAuthenticator::Standard do
 
     context 'when authentication is successful' do
       let(:user) { create :user, login: 'jsmith', password: 'password' }
+      before { user }
 
       it 'should set the user found in db' do
         expect{ subject }.not_to change{ User.count }
