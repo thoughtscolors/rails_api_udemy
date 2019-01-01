@@ -13,6 +13,7 @@ class AccessTokensController < ApplicationController
 
   private
   def authentication_params
-    params.permit(:code).to_h.symbolize_keys
+    params.require(:data).require(:attributes)
+    .permit(:code, :login, :password).to_h.symbolize_keys
   end
 end
