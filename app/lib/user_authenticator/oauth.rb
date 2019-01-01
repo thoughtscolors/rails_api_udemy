@@ -13,9 +13,9 @@ class UserAuthenticator::Oauth < UserAuthenticator
     raise AuthenticationError if token.try(:error).present?
 
     prepare_user
-    set_access_token
   end
 
+  private
   def client
     @client ||= Octokit::Client.new(
       client_id: ENV['GITHUB_CLIENT_ID'],
@@ -40,10 +40,7 @@ class UserAuthenticator::Oauth < UserAuthenticator
       User.create(user_data.merge(provider: "github"))
     end
   end
-
-
-  private
-
+  
   attr_reader :code
 
 end
