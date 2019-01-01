@@ -14,6 +14,7 @@ describe UserAuthenticator::Standard do
         expect(authenticator.user).to be_nil
       end
     end
+    
     context 'when login is invalid' do
       let(:user) { create :user, login: 'ddeo', password: 'password' }
       it_behaves_like 'invalid_authentication'
